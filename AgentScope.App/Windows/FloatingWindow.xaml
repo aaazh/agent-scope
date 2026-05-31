@@ -1,0 +1,143 @@
+<Window x:Class="AgentScope.App.Windows.FloatingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:AgentScope.App.Controls"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Topmost="True"
+        ShowInTaskbar="False"
+        Background="#01000000"
+        AllowsTransparency="False"
+        Width="320" Height="200"
+        MinWidth="200" MinHeight="28"
+        MaxWidth="600" MaxHeight="600"
+        Loaded="Window_Loaded"
+        LocationChanged="Window_LocationChanged"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="PanelBgBrush" Color="#E81A1A2E" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#FF4A4A6A" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#FF6C63FF" />
+        <SolidColorBrush x:Key="DangerBrush" Color="#FFFF4757" />
+        <SolidColorBrush x:Key="WarningBrush" Color="#FFFFA502" />
+        <SolidColorBrush x:Key="SuccessBrush" Color="#FF2ED573" />
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFF0F0F0" />
+        <SolidColorBrush x:Key="TextSecondary" Color="#FFA0A0B0" />
+    </Window.Resources>
+
+    <Grid>
+        <!-- Main content container -->
+        <Border x:Name="MainBorder"
+                Background="{StaticResource PanelBgBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition x:Name="ExpandedRow" Height="0" />
+                </Grid.RowDefinitions>
+
+                <!-- Compact Bar -->
+                <Border x:Name="CompactBar"
+                        Grid.Row="0"
+                        MinHeight="28"
+                        MouseEnter="CompactBar_MouseEnter"
+                        MouseLeave="CompactBar_MouseLeave"
+                        Cursor="Hand">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Tool status rows -->
+                        <ItemsControl x:Name="ToolsList" Grid.Column="0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+
+                        <!-- Resource summary + controls -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
+                            <TextBlock x:Name="ResourceSummary"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="10"
+                                       VerticalAlignment="Center"
+                                       Text="💻 --" />
+                            <Button x:Name="PinButton" Content="📌"
+                                    Width="20" Height="20"
+                                    FontSize="10"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Foreground="{StaticResource TextSecondary}"
+                                    Click="PinButton_Click"
+                                    Cursor="Hand"
+                                    ToolTip="锁定展开" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Expanded Panel -->
+                <Border x:Name="ExpandedPanel"
+                        Grid.Row="1"
+                        Background="{StaticResource PanelBgBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="0,1,0,0"
+                        Margin="0,4,0,0"
+                        Padding="8"
+                        Visibility="Collapsed">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="400">
+                        <StackPanel>
+                            <!-- Tool detail -->
+                            <TextBlock x:Name="ToolDetailName"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       FontWeight="Bold" FontSize="13" />
+                            <TextBlock x:Name="ToolDetailStatus"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="11" Margin="0,2,0,0" />
+
+                            <!-- Token gauge -->
+                            <controls:TokenGauge x:Name="TokenGaugeControl"
+                                                 Margin="0,8,0,0" />
+
+                            <!-- Permission queue -->
+                            <Border x:Name="PermissionSection"
+                                    BorderBrush="{StaticResource DangerBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="6"
+                                    Margin="0,8,0,0"
+                                    Visibility="Collapsed">
+                                <StackPanel>
+                                    <TextBlock Text="🔒 待审批权限" FontSize="12"
+                                               Foreground="{StaticResource DangerBrush}"
+                                               FontWeight="Bold" />
+                                    <ItemsControl x:Name="PermissionQueue" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Resource details -->
+                            <Border x:Name="ResourceSection"
+                                    Margin="0,8,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="💻 资源占用" FontSize="12"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontWeight="Bold" />
+                                    <TextBlock x:Name="ResourceDetail"
+                                               FontSize="11"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

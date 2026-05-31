@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Chinese (Simplified) string resources -->
+    <sys:String x:Key="App.Title">AgentScope</sys:String>
+    <sys:String x:Key="Menu.ShowHide">显示/隐藏</sys:String>
+    <sys:String x:Key="Menu.Settings">设置</sys:String>
+    <sys:String x:Key="Menu.Exit">退出</sys:String>
+
+    <sys:String x:Key="Settings.Title">AgentScope 设置</sys:String>
+    <sys:String x:Key="Settings.General">通用</sys:String>
+    <sys:String x:Key="Settings.Tools">工具</sys:String>
+    <sys:String x:Key="Settings.Appearance">外观</sys:String>
+    <sys:String x:Key="Settings.Notifications">通知</sys:String>
+    <sys:String x:Key="Settings.API">API</sys:String>
+
+    <sys:String x:Key="Settings.Language">语言</sys:String>
+    <sys:String x:Key="Settings.StartWithWindows">开机自启</sys:String>
+    <sys:String x:Key="Settings.MinimizeToTray">最小化到托盘</sys:String>
+
+    <sys:String x:Key="Settings.DockEdge">吸附边缘</sys:String>
+    <sys:String x:Key="Settings.CompactWidth">紧凑条宽度</sys:String>
+    <sys:String x:Key="Settings.Opacity">透明度</sys:String>
+    <sys:String x:Key="Settings.ExpandDelay">展开延迟 (ms)</sys:String>
+
+    <sys:String x:Key="Settings.EnableSound">启用音效</sys:String>
+    <sys:String x:Key="Settings.EnableToast">启用 Toast 通知</sys:String>
+
+    <sys:String x:Key="Settings.AnthropicAuth">Anthropic OAuth</sys:String>
+    <sys:String x:Key="Settings.OpenAIKey">OpenAI API Key</sys:String>
+
+    <sys:String x:Key="Tool.Status.Idle">空闲</sys:String>
+    <sys:String x:Key="Tool.Status.Running">运行中</sys:String>
+    <sys:String x:Key="Tool.Status.WaitingPermission">等待权限</sys:String>
+    <sys:String x:Key="Tool.Status.Error">错误</sys:String>
+
+    <sys:String x:Key="Permission.Allow">允许</sys:String>
+    <sys:String x:Key="Permission.Deny">拒绝</sys:String>
+    <sys:String x:Key="Permission.Pending">待审批权限</sys:String>
+    <sys:String x:Key="Permission.TimedOut">请求已超时</sys:String>
+
+    <sys:String x:Key="Resource.CPU">CPU</sys:String>
+    <sys:String x:Key="Resource.Memory">内存</sys:String>
+    <sys:String x:Key="Token.Usage">Token</sys:String>
+    <sys:String x:Key="Token.Estimated">估算</sys:String>
+</ResourceDictionary>

@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- English string resources -->
+    <sys:String x:Key="App.Title">AgentScope</sys:String>
+    <sys:String x:Key="Menu.ShowHide">Show/Hide</sys:String>
+    <sys:String x:Key="Menu.Settings">Settings</sys:String>
+    <sys:String x:Key="Menu.Exit">Exit</sys:String>
+
+    <sys:String x:Key="Settings.Title">AgentScope Settings</sys:String>
+    <sys:String x:Key="Settings.General">General</sys:String>
+    <sys:String x:Key="Settings.Tools">Tools</sys:String>
+    <sys:String x:Key="Settings.Appearance">Appearance</sys:String>
+    <sys:String x:Key="Settings.Notifications">Notifications</sys:String>
+    <sys:String x:Key="Settings.API">API</sys:String>
+
+    <sys:String x:Key="Settings.Language">Language</sys:String>
+    <sys:String x:Key="Settings.StartWithWindows">Start with Windows</sys:String>
+    <sys:String x:Key="Settings.MinimizeToTray">Minimize to tray</sys:String>
+
+    <sys:String x:Key="Settings.DockEdge">Dock edge</sys:String>
+    <sys:String x:Key="Settings.CompactWidth">Compact bar width</sys:String>
+    <sys:String x:Key="Settings.Opacity">Opacity</sys:String>
+    <sys:String x:Key="Settings.ExpandDelay">Expand delay (ms)</sys:String>
+
+    <sys:String x:Key="Settings.EnableSound">Enable sounds</sys:String>
+    <sys:String x:Key="Settings.EnableToast">Enable toast notifications</sys:String>
+
+    <sys:String x:Key="Settings.AnthropicAuth">Anthropic OAuth</sys:String>
+    <sys:String x:Key="Settings.OpenAIKey">OpenAI API Key</sys:String>
+
+    <sys:String x:Key="Tool.Status.Idle">Idle</sys:String>
+    <sys:String x:Key="Tool.Status.Running">Running</sys:String>
+    <sys:String x:Key="Tool.Status.WaitingPermission">Waiting Permission</sys:String>
+    <sys:String x:Key="Tool.Status.Error">Error</sys:String>
+
+    <sys:String x:Key="Permission.Allow">Allow</sys:String>
+    <sys:String x:Key="Permission.Deny">Deny</sys:String>
+    <sys:String x:Key="Permission.Pending">Pending Permissions</sys:String>
+    <sys:String x:Key="Permission.TimedOut">Request timed out</sys:String>
+
+    <sys:String x:Key="Resource.CPU">CPU</sys:String>
+    <sys:String x:Key="Resource.Memory">Memory</sys:String>
+    <sys:String x:Key="Token.Usage">Token</sys:String>
+    <sys:String x:Key="Token.Estimated">Estimated</sys:String>
+</ResourceDictionary>

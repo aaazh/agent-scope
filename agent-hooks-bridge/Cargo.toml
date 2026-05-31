@@ -1,0 +1,42 @@
+[package]
+name = "agent-hooks-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Windows agent hooks bridge for AgentScope — unified hook registration and event collection for AI coding CLI tools"
+license = "MIT"
+authors = ["AgentScope"]
+
+[[bin]]
+name = "agent-hooks-bridge"
+path = "src/main.rs"
+
+[target.'cfg(windows)'.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+dirs = "5"
+log = "0.4"
+env_logger = "0.11"
+winapi = { version = "0.3", features = [
+    "winbase",
+    "namedpipeapi",
+    "fileapi",
+    "handleapi",
+    "synchapi",
+    "minwinbase",
+    "winnt",
+    "processthreadsapi",
+    "securitybaseapi",
+    "accctrl",
+    "aclapi",
+]} }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
