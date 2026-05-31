@@ -13,6 +13,16 @@ Windows 桌面应用，用于实时监控多个 AI Agent 编程工具（Claude C
 | CodeBuddy | CodeBuddy.exe |
 | Trae | Trae.exe |
 
+## 初始化
+
+```bash
+git clone https://github.com/aaazh/agent-scope.git
+cd agent-scope
+.agent\setup.bat    # 创建 .claude/skills 和 .codex/skills 到 .agent/skills 的链接
+```
+
+后续新增 skill 统一放入 `.agent/skills/`，所有工具自动生效。
+
 ## 技术栈
 
 - Electron（桌面应用界面）
