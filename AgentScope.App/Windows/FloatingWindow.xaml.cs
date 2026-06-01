@@ -174,19 +174,19 @@ public partial class FloatingWindow : Window
     private void LoadPreferences()
     {
         // Restore saved position and dock preference
-        Left = Properties.Settings.Default.WindowLeft;
-        Top = Properties.Settings.Default.WindowTop;
-        Width = Properties.Settings.Default.WindowWidth > 0
-            ? Properties.Settings.Default.WindowWidth : 320;
+        Left = AppSettings.WindowLeft;
+        Top = AppSettings.WindowTop;
+        Width = AppSettings.WindowWidth > 0
+            ? AppSettings.WindowWidth : 320;
     }
 
     protected override void OnClosed(EventArgs e)
     {
         // Save preferences
-        Properties.Settings.Default.WindowLeft = Left;
-        Properties.Settings.Default.WindowTop = Top;
-        Properties.Settings.Default.WindowWidth = Width;
-        Properties.Settings.Default.Save();
+        AppSettings.WindowLeft = Left;
+        AppSettings.WindowTop = Top;
+        AppSettings.WindowWidth = (int)Width;
+        AppSettings.Save();
 
         _trayService.Dispose();
         base.OnClosed(e);

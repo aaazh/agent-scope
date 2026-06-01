@@ -1,6 +1,6 @@
 //! Unified event model for normalized hook events across all AI tools.
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 

@@ -5,18 +5,6 @@ use log::{error, info, warn};
 use std::io::{BufRead, BufReader, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::time::Duration;
-
-#[cfg(windows)]
-mod win {
-    use std::ffi::OsStr;
-    use std::os::windows::ffi::OsStrExt;
-    use std::path::Path;
-
-    pub fn to_wide(path: &Path) -> Vec<u16> {
-        path.as_os_str().encode_wide().chain(std::iter::once(0)).collect()
-    }
-}
 
 const PIPE_NAME: &str = r"\\.\pipe\agentscope";
 const BUFFER_SIZE: usize = 65536;
@@ -26,12 +14,15 @@ const MAX_CLIENTS: usize = 16;
 /// Accepts client connections and streams events.
 #[cfg(windows)]
 pub fn run_server(running: Arc<AtomicBool>) -> Result<(), String> {
-    use std::os::windows::io::FromRawHandle;
-    use winapi::um::fileapi::*;
-    use winapi::um::handleapi::*;
-    use winapi::um::namedpipeapi::*;
-    use winapi::um::synchapi::*;
-    use winapi::um::winbase::*;
+    use std::os::windows::ffi::OsStrExt;
+    use winapi::um::errhandlingapi::GetLastError;
+    use winapi::um::handleapi::{CloseHandle, INVALID_HANDLE_VALUE};
+    use winapi::um::namedpipeapi::{CreateNamedPipeW, ConnectNamedPipe};
+    use winapi::um::winbase::{
+        PIPE_ACCESS_DUPLEX, FILE_FLAG_OVERLAPPED,
+        PIPE_TYPE_MESSAGE, PIPE_READMODE_MESSAGE, PIPE_WAIT,
+    };
+    use winapi::shared::winerror::ERROR_PIPE_CONNECTED;
 
     info!("Starting Named Pipe server at {}", PIPE_NAME);
 
@@ -75,9 +66,11 @@ pub fn run_server(running: Arc<AtomicBool>) -> Result<(), String> {
                 }
 
                 // Spawn handler thread for this client
+                // HANDLE is *mut c_void which is not Send; pass as usize
+                let handle_as_int = pipe_handle as usize;
                 let client_running = running.clone();
                 std::thread::spawn(move || {
-                    handle_client(pipe_handle, client_running);
+                    handle_client(handle_as_int as winapi::shared::ntdef::HANDLE, client_running);
                 });
             }
         }
@@ -90,9 +83,7 @@ pub fn run_server(running: Arc<AtomicBool>) -> Result<(), String> {
 #[cfg(windows)]
 unsafe fn handle_client(pipe_handle: winapi::shared::ntdef::HANDLE, running: Arc<AtomicBool>) {
     use std::os::windows::io::FromRawHandle;
-    use winapi::um::fileapi::*;
-    use winapi::um::handleapi::*;
-    use winapi::um::namedpipeapi::*;
+    use winapi::um::handleapi::CloseHandle;
 
     let file = std::fs::File::from_raw_handle(pipe_handle as *mut _);
     let mut reader = BufReader::new(file.try_clone().expect("clone pipe handle"));

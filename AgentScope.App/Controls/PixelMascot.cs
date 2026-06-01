@@ -199,9 +199,9 @@ public class PixelMascot : FrameworkElement
                         var idx = ((y - offset) * SourceSize + x) * 4;
                         if (idx >= 0 && idx + 3 < frame.Length)
                         {
-                            frame[idx] = b;     // B
-                            frame[idx + 1] = g; // G
-                            frame[idx + 2] = r; // R
+                            frame[idx] = (byte)b;     // B
+                            frame[idx + 1] = (byte)g; // G
+                            frame[idx + 2] = (byte)r; // R
                             frame[idx + 3] = 255; // A
                         }
                     }
@@ -227,13 +227,13 @@ public class PixelMascot : FrameworkElement
         return frames;
     }
 
-    private static void DrawPixel(byte[] frame, int x, int y, byte r, byte g, byte b)
+    private static void DrawPixel(byte[] frame, int x, int y, int r, int g, int b)
     {
         if (x < 0 || x >= SourceSize || y < 0 || y >= SourceSize) return;
         var idx = (y * SourceSize + x) * 4;
-        frame[idx] = b;
-        frame[idx + 1] = g;
-        frame[idx + 2] = r;
+        frame[idx] = (byte)b;
+        frame[idx + 1] = (byte)g;
+        frame[idx + 2] = (byte)r;
         frame[idx + 3] = 255;
     }
 }

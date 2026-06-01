@@ -28,9 +28,13 @@ winapi = { version = "0.3", features = [
     "securitybaseapi",
     "accctrl",
     "aclapi",
-]} }
+    "errhandlingapi",
+    "winerror",
+]
+}
 uuid = { version = "1", features = ["v4"] }
 chrono = { version = "0.4", features = ["serde"] }
+ctrlc = "3"
 
 [dev-dependencies]
 tempfile = "3"

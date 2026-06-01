@@ -15,13 +15,13 @@ public partial class SettingsWindow : Window
     {
         // General
         StartWithWindowsCheck.IsChecked = IsStartWithWindowsEnabled();
-        MinimizeToTrayCheck.IsChecked = Properties.Settings.Default.MinimizeToTray;
+        MinimizeToTrayCheck.IsChecked = AppSettings.MinimizeToTray;
 
         // Appearance
-        WidthBox.Text = Properties.Settings.Default.WindowWidth > 0
-            ? Properties.Settings.Default.WindowWidth.ToString() : "320";
-        ExpandDelayBox.Text = Properties.Settings.Default.ExpandDelayMs > 0
-            ? Properties.Settings.Default.ExpandDelayMs.ToString() : "300";
+        WidthBox.Text = AppSettings.WindowWidth > 0
+            ? AppSettings.WindowWidth.ToString() : "320";
+        ExpandDelayBox.Text = AppSettings.ExpandDelayMs > 0
+            ? AppSettings.ExpandDelayMs.ToString() : "300";
 
         // Language detection
         var culture = System.Globalization.CultureInfo.CurrentUICulture;
@@ -38,12 +38,12 @@ public partial class SettingsWindow : Window
 
         // Save appearance
         if (int.TryParse(WidthBox.Text, out int width) && width >= 200 && width <= 600)
-            Properties.Settings.Default.WindowWidth = width;
+            AppSettings.WindowWidth = width;
         if (int.TryParse(ExpandDelayBox.Text, out int delay) && delay >= 100 && delay <= 2000)
-            Properties.Settings.Default.ExpandDelayMs = delay;
+            AppSettings.ExpandDelayMs = delay;
 
-        Properties.Settings.Default.MinimizeToTray = MinimizeToTrayCheck.IsChecked == true;
-        Properties.Settings.Default.Save();
+        AppSettings.MinimizeToTray = MinimizeToTrayCheck.IsChecked == true;
+        AppSettings.Save();
 
         DialogResult = true;
         Close();
