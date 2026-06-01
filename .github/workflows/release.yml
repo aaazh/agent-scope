@@ -19,15 +19,22 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build Bridge (Rust)
-        run: cargo build --release
+        shell: pwsh
+        run: |
+          $env:RUSTFLAGS = "-C linker=rust-lld"
+          $sdk = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Lib" -Directory `
+            | Where-Object { $_.Name -match '^10\.\d+\.\d+\.\d+$' } `
+            | Sort-Object Name -Descending | Select-Object -First 1
+          $env:LIB = "$($sdk.FullName)\um\x64;$($sdk.FullName)\ucrt\x64"
+          Write-Host "Windows SDK: $($sdk.Name)"
+          cargo build --release
         working-directory: agent-hooks-bridge
-        env:
-          RUSTFLAGS: "-C linker=rust-lld"
-          LIB: "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x64"
 
       - name: Publish App (C#)
+        shell: pwsh
         run: |
-          dotnet publish AgentScope.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=${{ github.ref_name }}
+          $version = '${{ github.ref_name }}' -replace '^v', ''
+          dotnet publish AgentScope.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=$version
 
       - name: Collect artifacts
         shell: pwsh
@@ -42,8 +49,15 @@ jobs:
         run: choco install innosetup --no-progress -y
 
       - name: Build Installer
+        shell: pwsh
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/agent-scope-setup.iss
+          $iscc = Get-ChildItem -Path "C:\Program Files*\Inno Setup 6" -Filter "ISCC.exe" `
+            -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $iscc) {
+            Write-Error "ISCC.exe not found — Inno Setup installation may have failed"
+            exit 1
+          }
+          & $iscc.FullName installer/agent-scope-setup.iss
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
