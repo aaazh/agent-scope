@@ -72,7 +72,14 @@
 
 - [ ] 9.1 Commit all changes and push to feature/agentscope-mvp branch
 - [ ] 9.2 Create PR to master, merge
-- [ ] 9.3 `git tag v0.1.0-alpha` and `git push origin v0.1.0-alpha`
+- [x] 9.3 `git tag v0.1.0-alpha` and `git push origin v0.1.0-alpha`
 - [ ] 9.4 Monitor GitHub Actions release workflow, verify .exe uploaded
 - [ ] 9.5 Edit release draft: add screenshots, changelog, system requirements
 - [ ] 9.6 Publish release, share link
+
+## 10. Known TODOs (post-Alpha)
+
+- [ ] 10.1 **Chinese installer UI**: Download official `ChineseSimplified.isl` from [jrsoftware.org/isdl.php#qsp](https://jrsoftware.org/isdl.php#qsp) (QuickStart Pack) and place in `C:\Program Files (x86)\Inno Setup 6\Languages\`. Then re-enable `MessagesFile: "compiler:Languages\ChineseSimplified.isl"` in the `.iss` script.
+- [ ] 10.2 **Install test verification**: v0.1.0-alpha installer tested locally — installed to `%LOCALAPPDATA%\AgentScope\`, created Start Menu + Desktop shortcuts, app auto-launched successfully.
+- [ ] 10.3 **Mascot JSONs**: `claude.json` and `codex.json` pixel data still using procedural fallback (no JSON files created yet).
+- [ ] 10.4 **Release only from master**: `release.yml` triggers on any `v*` tag push regardless of branch. Must restrict to `master` branch only — feature branch tags should not trigger release builds.
