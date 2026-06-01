@@ -25,11 +25,16 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
-Name: "chinese"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[CustomMessages]
+english.CreateDesktopIcon=Create &desktop shortcut
+english.AdditionalIcons=Additional icons:
+english.LaunchAfterInstall=Launch AgentScope
+english.AppDescription=Pixel TV for your AI Agents — 叮~ 你的 AI 正在直播
+
 [Tasks]
-Name: "desktopicon"; Description: "Create &desktop shortcut"; GroupDescription: "Additional icons:"
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
 Source: "..\publish\AgentScope\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -39,4 +44,4 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch AgentScope"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchAfterInstall}"; Flags: nowait postinstall skipifsilent
