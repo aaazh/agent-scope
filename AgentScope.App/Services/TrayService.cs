@@ -27,7 +27,7 @@ public class TrayService : IDisposable
         // Use a simple icon — in production, load from embedded resource
         _notifyIcon = new NotifyIcon
         {
-            Text = "AgentScope",
+            Text = "AgentScope — Your AI, live on screen.",
             ContextMenuStrip = _contextMenu,
             Visible = true
         };

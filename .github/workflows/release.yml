@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Bridge (Rust)
+        run: cargo build --release
+        working-directory: agent-hooks-bridge
+        env:
+          RUSTFLAGS: "-C linker=rust-lld"
+          LIB: "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x64"
+
+      - name: Publish App (C#)
+        run: |
+          dotnet publish AgentScope.App -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=${{ github.ref_name }}
+
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force publish/AgentScope | Out-Null
+          Copy-Item AgentScope.App/bin/Release/net8.0-windows/win-x64/publish/* publish/AgentScope/ -Recurse -Force
+          Copy-Item agent-hooks-bridge/target/release/agent-hooks-bridge.exe publish/AgentScope/ -Force
+          Copy-Item AgentScope.App/Assets publish/AgentScope/Assets -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item AgentScope.App/Locales publish/AgentScope/Locales -Recurse -Force -ErrorAction SilentlyContinue
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/agent-scope-setup.iss
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/AgentScope-Setup-v*.exe
+          draft: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

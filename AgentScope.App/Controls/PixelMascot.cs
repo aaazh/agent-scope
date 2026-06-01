@@ -85,20 +85,69 @@ public class PixelMascot : FrameworkElement
     }
 
     /// <summary>
-    /// Load the animation frames for the current tool + status combination.
-    /// Frame data is generated from palette JSON files embedded as resources.
-    /// </summary>
+    /// Load animation frames — try JSON file first, fall back to procedural.
     private void LoadAnimation()
     {
-        // In production: load from Assets/Mascots/{ToolId}_{Status}.json
-        // For now: generate simple procedural pixel art per tool+status
-        _currentAnimation = GenerateAnimationFrames(ToolId, Status);
+        // Try loading from Assets/Mascots/{ToolId}.json
+        _currentAnimation = LoadFromJson(ToolId, Status);
+        if (_currentAnimation == null)
+            _currentAnimation = GenerateAnimationFrames(ToolId, Status); // fallback
+
         _currentFrame = 0;
         _frameAccumulator = 0;
-
-        // Render first frame
         if (_currentAnimation is { Count: > 0 })
             RenderFrame(_currentAnimation[0]);
+    }
+
+    /// <summary>Try to load pixel data from JSON file.</summary>
+    private static List<byte[]>? LoadFromJson(string toolId, string status)
+    {
+        try {
+            var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                "Assets", "Mascots", $"{toolId}.json");
+            if (!File.Exists(jsonPath)) return null;
+
+            var json = File.ReadAllText(jsonPath);
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            if (!root.TryGetProperty("palette", out var paletteJson)) return null;
+            var palette = new byte[paletteJson.GetArrayLength()][];
+            for (int i = 0; i < palette.Length; i++) {
+                var hex = paletteJson[i].GetString()!; // e.g. "#D9775AFF" or "#00000000"
+                palette[i] = new byte[] {
+                    Convert.ToByte(hex[5..7], 16),                            // B
+                    Convert.ToByte(hex[3..5], 16),                            // G
+                    Convert.ToByte(hex[1..3], 16),                            // R
+                    hex.Length > 7 ? Convert.ToByte(hex[7..9], 16) : (byte)255 // A
+                };
+            }
+
+            if (!root.TryGetProperty("animations", out var anims)) return null;
+            if (!anims.TryGetProperty(status, out var anim)) return null;
+
+            var framesJson = anim.GetProperty("frames");
+            var frames = new List<byte[]>();
+            foreach (var frameJson in framesJson.EnumerateArray()) {
+                var frame = new byte[SourceSize * SourceSize * 4];
+                int row = 0;
+                foreach (var rowJson in frameJson.EnumerateArray()) {
+                    int col = 0;
+                    foreach (var idx in rowJson.EnumerateArray()) {
+                        int paletteIdx = idx.GetInt32();
+                        if (paletteIdx >= 0 && paletteIdx < palette.Length) {
+                            int pixelIdx = (row * SourceSize + col) * 4;
+                            Array.Copy(palette[paletteIdx], 0, frame, pixelIdx, 4);
+                        }
+                        col++;
+                    }
+                    row++;
+                }
+                frames.Add(frame);
+            }
+            return frames;
+        }
+        catch { return null; }
     }
 
     private void OnRendering(object? sender, EventArgs e)

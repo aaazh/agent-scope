@@ -2,13 +2,13 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:AgentScope.App.Controls"
+        xmlns:vm="clr-namespace:AgentScope.App.ViewModels"
         WindowStyle="None"
         ResizeMode="CanResize"
         Topmost="True"
         ShowInTaskbar="False"
         Background="#01000000"
-        AllowsTransparency="False"
-        Width="320" Height="200"
+        Width="320" Height="56"
         MinWidth="200" MinHeight="28"
         MaxWidth="600" MaxHeight="600"
         Loaded="Window_Loaded"
@@ -16,122 +16,134 @@
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="PanelBgBrush" Color="#E81A1A2E" />
-        <SolidColorBrush x:Key="BorderBrush" Color="#FF4A4A6A" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#FF6C63FF" />
-        <SolidColorBrush x:Key="DangerBrush" Color="#FFFF4757" />
-        <SolidColorBrush x:Key="WarningBrush" Color="#FFFFA502" />
-        <SolidColorBrush x:Key="SuccessBrush" Color="#FF2ED573" />
-        <SolidColorBrush x:Key="TextPrimary" Color="#FFF0F0F0" />
-        <SolidColorBrush x:Key="TextSecondary" Color="#FFA0A0B0" />
+        <SolidColorBrush x:Key="PanelBg" Color="#E81A1A2E" />
+        <SolidColorBrush x:Key="Border" Color="#FF4A4A6A" />
+        <SolidColorBrush x:Key="Accent" Color="#FF6C63FF" />
+        <SolidColorBrush x:Key="Danger" Color="#FFFF4757" />
+        <SolidColorBrush x:Key="Success" Color="#FF2ED573" />
+        <SolidColorBrush x:Key="Text" Color="#FFF0F0F0" />
+        <SolidColorBrush x:Key="TextDim" Color="#FFA0A0B0" />
+
+        <!-- Tool row data template -->
+        <DataTemplate DataType="{x:Type vm:ToolRowViewModel}">
+            <Border Height="28" Background="Transparent" Margin="0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Status dot -->
+                    <Ellipse Grid.Column="0" Width="8" Height="8"
+                             Fill="{Binding StatusBrush}" Margin="4,0"
+                             VerticalAlignment="Center"/>
+                    <!-- Tool name -->
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayName}"
+                               Foreground="{StaticResource Text}" FontSize="11"
+                               VerticalAlignment="Center" Margin="4,0"/>
+                    <!-- Activity -->
+                    <TextBlock Grid.Column="2" Text="{Binding CurrentActivity}"
+                               Foreground="{StaticResource TextDim}" FontSize="10"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" Margin="4,0"/>
+                    <!-- Permission badge -->
+                    <TextBlock Grid.Column="3" VerticalAlignment="Center" FontSize="11"
+                               Foreground="{StaticResource Danger}" Margin="4,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value=""/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PendingPermissions}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        🔒<Run Text="{Binding PendingPermissions}"/>
+                    </TextBlock>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
-        <!-- Main content container -->
-        <Border x:Name="MainBorder"
-                Background="{StaticResource PanelBgBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="8">
+        <Border x:Name="MainBorder" Background="{StaticResource PanelBg}"
+                BorderBrush="{StaticResource Border}" BorderThickness="1"
+                CornerRadius="8" Padding="6">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition x:Name="ExpandedRow" Height="0" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition x:Name="ExpandedRow" Height="0"/>
                 </Grid.RowDefinitions>
 
                 <!-- Compact Bar -->
-                <Border x:Name="CompactBar"
-                        Grid.Row="0"
-                        MinHeight="28"
-                        MouseEnter="CompactBar_MouseEnter"
-                        MouseLeave="CompactBar_MouseLeave"
-                        Cursor="Hand">
+                <Border x:Name="CompactBar" Grid.Row="0" MinHeight="28"
+                        MouseEnter="CompactBar_MouseEnter" MouseLeave="CompactBar_MouseLeave">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Tool status rows -->
-                        <ItemsControl x:Name="ToolsList" Grid.Column="0">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+                        <ItemsControl Grid.Column="0" ItemsSource="{Binding Tools}"/>
 
-                        <!-- Resource summary + controls -->
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                            <TextBlock x:Name="ResourceSummary"
-                                       Foreground="{StaticResource TextSecondary}"
-                                       FontSize="10"
-                                       VerticalAlignment="Center"
-                                       Text="💻 --" />
-                            <Button x:Name="PinButton" Content="📌"
-                                    Width="20" Height="20"
-                                    FontSize="10"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Foreground="{StaticResource TextSecondary}"
+                        <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                    VerticalAlignment="Center" Margin="4,0">
+                            <TextBlock VerticalAlignment="Center" FontSize="9"
+                                       Foreground="{StaticResource TextDim}">
+                                💻 <Run Text="{Binding TotalCpuPercent, StringFormat=F1}"/>%
+                                | <Run Text="{Binding TotalMemoryMb, StringFormat=F0}"/>MB
+                            </TextBlock>
+                            <Button x:Name="PinButton" Content="📌" Width="20" Height="20"
+                                    FontSize="10" Background="Transparent" BorderThickness="0"
                                     Click="PinButton_Click"
-                                    Cursor="Hand"
-                                    ToolTip="锁定展开" />
+                                    ToolTip="Pin expanded"/>
                         </StackPanel>
                     </Grid>
                 </Border>
 
                 <!-- Expanded Panel -->
-                <Border x:Name="ExpandedPanel"
-                        Grid.Row="1"
-                        Background="{StaticResource PanelBgBrush}"
-                        BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="0,1,0,0"
-                        Margin="0,4,0,0"
-                        Padding="8"
+                <Border x:Name="ExpandedPanel" Grid.Row="1"
+                        Background="{StaticResource PanelBg}" BorderBrush="{StaticResource Border}"
+                        BorderThickness="0,1,0,0" Margin="0,4,0,0" Padding="8"
                         Visibility="Collapsed">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="400">
                         <StackPanel>
                             <!-- Tool detail -->
-                            <TextBlock x:Name="ToolDetailName"
-                                       Foreground="{StaticResource TextPrimary}"
-                                       FontWeight="Bold" FontSize="13" />
-                            <TextBlock x:Name="ToolDetailStatus"
-                                       Foreground="{StaticResource TextSecondary}"
-                                       FontSize="11" Margin="0,2,0,0" />
+                            <StackPanel DataContext="{Binding SelectedTool}">
+                                <TextBlock Foreground="{StaticResource Text}" FontWeight="Bold"
+                                           FontSize="13">
+                                    <Run Text="📺 "/><Run Text="{Binding DisplayName}"/>
+                                </TextBlock>
+                                <TextBlock Foreground="{StaticResource TextDim}" FontSize="11"
+                                           Margin="0,2,0,0">
+                                    Status: <Run Text="{Binding Status}" FontWeight="Bold"/>
+                                </TextBlock>
 
-                            <!-- Token gauge -->
-                            <controls:TokenGauge x:Name="TokenGaugeControl"
-                                                 Margin="0,8,0,0" />
+                                <!-- Token gauge -->
+                                <controls:TokenGauge Margin="0,6,0,0"
+                                    TotalTokens="{Binding TotalTokens}"
+                                    TokenLimit="{Binding TokenLimit}"/>
 
-                            <!-- Permission queue -->
-                            <Border x:Name="PermissionSection"
-                                    BorderBrush="{StaticResource DangerBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="4"
-                                    Padding="6"
-                                    Margin="0,8,0,0"
-                                    Visibility="Collapsed">
+                                <!-- Activity -->
+                                <TextBlock Margin="0,6,0,0" FontSize="11"
+                                           Foreground="{StaticResource TextDim}"
+                                           TextWrapping="Wrap">
+                                    🔧 Current: <Run Text="{Binding CurrentActivity}" Foreground="{StaticResource Text}"/>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!-- Resource detail -->
+                            <Border Margin="0,8,0,0" Padding="6"
+                                    Background="#FF222244" CornerRadius="4">
                                 <StackPanel>
-                                    <TextBlock Text="🔒 待审批权限" FontSize="12"
-                                               Foreground="{StaticResource DangerBrush}"
-                                               FontWeight="Bold" />
-                                    <ItemsControl x:Name="PermissionQueue" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Resource details -->
-                            <Border x:Name="ResourceSection"
-                                    Margin="0,8,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="💻 资源占用" FontSize="12"
-                                               Foreground="{StaticResource TextSecondary}"
-                                               FontWeight="Bold" />
-                                    <TextBlock x:Name="ResourceDetail"
-                                               FontSize="11"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               TextWrapping="Wrap" />
+                                    <TextBlock FontSize="11" FontWeight="Bold"
+                                               Foreground="{StaticResource TextDim}">💻 Resources</TextBlock>
+                                    <TextBlock FontSize="10" Foreground="{StaticResource Text}">
+                                        CPU: <Run Text="{Binding TotalCpuPercent, StringFormat=F1}" Foreground="{StaticResource Accent}"/>%
+                                        | RAM: <Run Text="{Binding TotalMemoryMb, StringFormat=F0}" Foreground="{StaticResource Accent}"/> MB
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

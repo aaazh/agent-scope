@@ -23,8 +23,16 @@ target/
 .claude/skills/
 .codex/skills/
 
-# Placeholder assets directory
-AgentScope.App/Assets/
+# Assets: track icons & mascot data, ignore build outputs
+AgentScope.App/Assets/Icons/*
+!AgentScope.App/Assets/Icons/app.ico
+AgentScope.App/Assets/Mascots/*
+!AgentScope.App/Assets/Mascots/*.json
+AgentScope.App/Assets/Sounds/
+
+# Dev tools (generated projects)
+tools/IconGen/bin/
+tools/IconGen/obj/
 
 # OS
 Thumbs.db

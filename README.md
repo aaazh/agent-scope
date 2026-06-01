@@ -1,8 +1,8 @@
-# AgentScope
+# 📺 AgentScope
 
-> Windows 桌面悬浮窗，实时监控 AI Agent 编程工具的会话状态、Token 用量与系统资源占用。
+> **叮~ 你的 AI 正在直播** — 让 AI Agent 触手可及的桌面悬浮窗。
 
-AgentScope 是 [CodeIsland](https://github.com/wxtsky/CodeIsland) 的 Windows 精神移植——将 macOS 刘海区域的状态面板变成了 Windows 屏幕边缘的悬浮窗，并增加了 Token 消耗仪表盘和进程资源监控。
+AgentScope 是一台"像素小电视"——吸附在 Windows 屏幕边缘，实时直播你的 AI 编码工具（Claude Code、Codex）在做什么。自带 Token 仪表盘和系统资源监控，告别 Alt+Tab 切换窗口的烦恼。
 
 ---
 
